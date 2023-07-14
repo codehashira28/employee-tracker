@@ -4,41 +4,67 @@ require('console.table');
 
 const prompt = inquirer.createPromptModule();
 
-prompt({
-    type: 'rawlist',
-    name: 'query',
-    message: 'Select a query to run',
-    choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees'
-    ]
-}).then((answer) => {
-    if(answer.query === 'View all departments') {
-        db.query('SELECT * FROM department', (err, results) => {
-            if(err) {
-                console.error(err);
-            } else {
-                console.table(results);
-            }
-        })
-    }
+const handleAction = (choice) => {
+    switch(choice) {
+        case 'View all departments': 
+            db.query('SELECT * FROM departments', (err, table) => {
+                if(err) {
+                    console.error(err);
+                } else {
+                    console.table(table);
+                }
+            })
+            break;
 
-    else if(answer.query === 'View all roles') {
-        db.query('SELECT * FROM role', (err, results) => {
-            if(err) {
-                console.error(err);
-            } else {
-                console.table(results);
-            }
-        })
-    } else {
-        db.query('SELECT * FROM employee', (err, results) => {
-            if(err) {
-                console.error(err);
-            } else {
-                console.table(results);
-            }
-        })
+        case 'View all roles':
+            db.query('SELECT * FROM roles', (err, table) => {
+                if(err) {
+                    console.error(err);
+                } else {
+                    console.table(table);
+                }
+            })
+            break;
+        
+        case 'View all employees':
+            db.query('SELECT * FROM employees', (err, table) => {
+                if(err) {
+                    console.error(err);
+                } else {
+                    console.table(table);
+                }
+            })
+
+        case 'Add department':
+            prompt({
+                type: 'text',
+                name: 'name',
+                message: 'What is the name of the department?'
+            }).then((answer) => {
+                db.query(`INSERT INTO departments (name) VALUES ('${answer.name}')`, (err, res) => {
+                    if(err) console.error(err);
+                    else init();
+                })
+                
+            })
     }
-})
+}
+
+const init = () => {
+    prompt({
+        type: 'rawlist',
+        name: 'action',
+        message: 'What would you like to do?',
+        choices: [
+            'View all departments',
+            'Add department',
+            'View all roles',
+            'View all employees'
+        ]
+    }).then((data) => {
+        handleAction(data.action);
+    });
+}
+
+init();
+
