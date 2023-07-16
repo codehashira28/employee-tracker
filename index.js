@@ -4,36 +4,62 @@ require('console.table');
 
 const prompt = inquirer.createPromptModule();
 
+const getAll = (tableName) => {
+    db.query('SELECT * FROM ??', tableName, (err, table) => {
+        if(err) {
+            console.error(err);
+        } else {
+            console.table(table);
+            init();
+        } 
+    })
+}
+
+const viewAllEmployees = (tableName) => {
+    db.query(`SELECT A.id, A.first_name, A.last_name, title, name AS department, salary, CONCAT(B.first_name, " ", B.last_name) as manager
+    FROM employees A
+    LEFT JOIN roles ON A.role_id = roles.id
+    LEFT JOIN departments ON department_id = departments.id
+    LEFT JOIN employees B ON A.manager_id = B.id
+    `, tableName, (err, table) => {
+        if(err) {
+            console.error(err);
+            process.exit();
+        } else {
+            console.table(table);
+            init();
+        }
+    })
+
+}
+
+const viewAllRoles = (tableName) => {
+    db.query(`SELECT roles.id, title, name AS department, salary
+    FROM roles
+    LEFT JOIN departments ON department_id = departments.id
+    `, tableName, (err, table) => {
+        if(err) {
+            console.error(err);
+        } else {
+            console.table(table);
+            init();
+        }
+    })
+}
+
 const handleAction = (choice) => {
     switch(choice) {
         case 'View all departments': 
-            db.query('SELECT * FROM departments', (err, table) => {
-                if(err) {
-                    console.error(err);
-                } else {
-                    console.table(table);
-                }
-            })
+            getAll('departments');
             break;
 
         case 'View all roles':
-            db.query('SELECT * FROM roles', (err, table) => {
-                if(err) {
-                    console.error(err);
-                } else {
-                    console.table(table);
-                }
-            })
+           viewAllRoles('roles');
             break;
         
         case 'View all employees':
-            db.query('SELECT * FROM employees', (err, table) => {
-                if(err) {
-                    console.error(err);
-                } else {
-                    console.table(table);
-                }
-            })
+            viewAllEmployees('employees');
+            break;
 
         case 'Add department':
             prompt({
@@ -45,8 +71,13 @@ const handleAction = (choice) => {
                     if(err) console.error(err);
                     else init();
                 })
-                
             })
+            break;
+
+        default: {
+            process.exit();
+        }
+        
     }
 }
 
@@ -59,7 +90,8 @@ const init = () => {
             'View all departments',
             'Add department',
             'View all roles',
-            'View all employees'
+            'View all employees',
+            'Quit'
         ]
     }).then((data) => {
         handleAction(data.action);
