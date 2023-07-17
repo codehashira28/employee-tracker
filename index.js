@@ -49,19 +49,19 @@ const viewAllRoles = (tableName) => {
 
 const handleAction = (choice) => {
     switch(choice) {
-        case 'View all departments': 
+        case 'View All Departments': 
             getAll('departments');
             break;
 
-        case 'View all roles':
+        case 'View All Roles':
            viewAllRoles('roles');
             break;
         
-        case 'View all employees':
+        case 'View All Employees':
             viewAllEmployees('employees');
             break;
 
-        case 'Add department':
+        case 'Add Department':
             prompt({
                 type: 'text',
                 name: 'name',
@@ -87,10 +87,13 @@ const init = () => {
         name: 'action',
         message: 'What would you like to do?',
         choices: [
-            'View all departments',
-            'Add department',
-            'View all roles',
-            'View all employees',
+            'View All Employees',
+            'Add Employee',
+            'Update Employee Role',
+            'View All Roles',
+            'Add Role',
+            'View All Departments',
+            'Add Department',
             'Quit'
         ]
     }).then((data) => {
