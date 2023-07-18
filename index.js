@@ -43,7 +43,7 @@ const getRoles = () => {
 }
 
 const getManagers = () => {
-    let managers = [];
+    let managers = ['NULL'];
     db.query('SELECT CONCAT(first_name, " ", last_name) as manager FROM employees', (err, data) => {
         if(err) console.error(err);
         else return data.forEach(person => managers.push(person.manager));
